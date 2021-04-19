@@ -207,3 +207,5 @@ Last login: Wed Sep  4 07:10:15 2019 from 192.168.1.147
 To run a command as administrator (user "root"), use "sudo <command>".
 See "man sudo_root" for details.
 ```  
+
+Happy Ethical Hacking
