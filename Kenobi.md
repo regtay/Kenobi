@@ -1,4 +1,4 @@
-# Kenobi
+# Kenobi Tryhackme {THM}
 
 Scan the machine with nmap, how many ports are open? 7
 
